@@ -1,46 +1,46 @@
-CREATE TABLE IF NOT EXISTS list_performers (
-    performers_id SERIAL PRIMARY KEY,
-    name_performers VARCHAR(40) NOT NULL
-);
+-- Задание 1
 
-CREATE TABLE IF NOT EXISTS list_genres (
-    genres_id SERIAL PRIMARY KEY,
-    genre_name VARCHAR(40) NOT NULL
-);
+INSERT INTO list_performers
+VALUES(1,  'Бюро'), 
+(2, 'Скриптонит'), 
+(3, 'Эндшпиль'), 
+(4, 'Armich'), 
+(5, 'Miyagi');
 
-CREATE TABLE IF NOT EXISTS album_list (
-    album_id SERIAL PRIMARY KEY,
-    album_name VARCHAR(40) NOT NULL,
-    year_release DATE NOT NULL
-);
+INSERT INTO list_genres
+VALUES(1, 'Инди-поп'), 
+(2, 'Местное инди'), 
+(3, 'Поп'), 
+(4, 'Рэп');
 
-CREATE TABLE IF NOT EXISTS track (
-    track_id SERIAL PRIMARY KEY,
-    track_name VARCHAR(40) NOT NULL,
-    duration TIME NOT NULL,
-    album_id INTEGER REFERENCES album_list(album_id)
-);
+INSERT INTO genres_performers
+VALUES(1, 1), (1, 2), (2, 3), (3, 3), (3, 4), (4, 3), (5, 4);
 
-CREATE TABLE IF NOT EXISTS list_collection (
-    collection_id SERIAL PRIMARY KEY,
-    collection_name VARCHAR(40) NOT NULL,
-    release_year DATE NOT NULL
-);
+INSERT INTO album_list
+VALUES(1, 'На соседних полках', '2024-05-31'), 
+(2, 'Romantic Collection', '2023-12-29'), 
+(3, 'Old Days', '2023-08-25'), 
+(4, 'Смесь', '2023-04-14'), 
+(5, 'Buster Keaton', '2019-06-21');
 
-CREATE TABLE IF NOT EXISTS genres_performers (
-    performers_id INTEGER REFERENCES list_performers(performers_id),
-    genres_id INTEGER REFERENCES list_genres(genres_id),
-    CONSTRAINT pk PRIMARY KEY (performers_id, genres_id)
-);
+INSERT INTO albums_performers
+VALUES(1, 1), (2, 2), (3, 3), (4, 4), (5, 5);
 
-CREATE TABLE IF NOT EXISTS albums_performers (
-    album_id INTEGER REFERENCES album_list(album_id),
-    performers_id INTEGER REFERENCES list_performers(performers_id),
-    CONSTRAINT pk2 PRIMARY KEY (album_id, performers_id)
-);
+INSERT INTO track
+VALUES(1, 'Будильник', '00:02:17', 1), 
+(2, 'На соседних полках', '00:02:23', 1), 
+(3, 'Разбалованная', '00:02:47', 2), 
+(4, 'Slow Mo', '00:03:15', 4), 
+(5, 'Малиновый рассвет', '00:03:54', 3), 
+(6, 'Angel', '00:03:35', 5), 
+(7, 'Ночи в одного', '00:02:07', 5),
+(8, 'On my mind', '00:03:29', 4);
 
-CREATE TABLE IF NOT EXISTS collections_tracks (
-    collection_id INTEGER REFERENCES list_collection(collection_id),
-    track_id INTEGER REFERENCES track(track_id),
-    CONSTRAINT pk3 PRIMARY KEY (collection_id, track_id)
-);
+INSERT INTO list_collection
+VALUES(1, 'ANABIOS', '2026-03-06'), 
+(2, 'Romantic Collection', '2023-12-29'), 
+(3, 'King Kong', '2019-11-14'), 
+(4, 'Смесь', '2023-04-14');
+
+INSERT INTO collections_tracks
+VALUES(1, 3), (1, 4), (2, 5), (2, 4), (3, 6), (3, 7), (4, 3), (4, 4);
