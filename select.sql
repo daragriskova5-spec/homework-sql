@@ -1,46 +1,62 @@
--- Задание 1
+-- Задание 2
 
-INSERT INTO list_performers
-VALUES(1,  'Бюро'), 
-(2, 'Скриптонит'), 
-(3, 'Эндшпиль'), 
-(4, 'Armich'), 
-(5, 'Miyagi');
+-- Название и продолжительность самого длительного трека.
+SELECT track_name, duration
+FROM track 
+ORDER BY duration DESC
+LIMIT 1;
 
-INSERT INTO list_genres
-VALUES(1, 'Инди-поп'), 
-(2, 'Местное инди'), 
-(3, 'Поп'), 
-(4, 'Рэп');
+-- Название треков, продолжительность которых не менее 3,5 минут.
+SELECT track_name
+FROM track
+WHERE duration >= '00:03:30';
 
-INSERT INTO genres_performers
-VALUES(1, 1), (1, 2), (2, 3), (3, 3), (3, 4), (4, 3), (5, 4);
+-- Названия сборников, вышедших в период с 2018 по 2020 год включительно.
+SELECT collection_name
+FROM list_collection
+WHERE release_year BETWEEN '2018-01-01' AND '2020-12-31';
 
-INSERT INTO album_list
-VALUES(1, 'На соседних полках', '2024-05-31'), 
-(2, 'Romantic Collection', '2023-12-29'), 
-(3, 'Old Days', '2023-08-25'), 
-(4, 'Смесь', '2023-04-14'), 
-(5, 'Buster Keaton', '2019-06-21');
+-- Исполнители, чьё имя состоит из одного слова.
+SELECT name_performers
+FROM list_performers
+WHERE name_performers NOT LIKE '% %';
 
-INSERT INTO albums_performers
-VALUES(1, 1), (2, 2), (3, 3), (4, 4), (5, 5);
+-- Название треков, которые содержат слово «мой» или «my».
+SELECT track_name
+FROM track
+WHERE track_name LIKE '%мой%' OR track_name LIKE '%my%';
 
-INSERT INTO track
-VALUES(1, 'Будильник', '00:02:17', 1), 
-(2, 'На соседних полках', '00:02:23', 1), 
-(3, 'Разбалованная', '00:02:47', 2), 
-(4, 'Slow Mo', '00:03:15', 4), 
-(5, 'Малиновый рассвет', '00:03:54', 3), 
-(6, 'Angel', '00:03:35', 5), 
-(7, 'Ночи в одного', '00:02:07', 5),
-(8, 'On my mind', '00:03:29', 4);
+-- Задание 3. Количество исполнителей в каждом жанре.
+SELECT genre_name, COUNT(performers_id) AS count_performers
+FROM list_genres g
+JOIN genres_performers gp ON g.genres_id = gp.genres_id
+GROUP BY genre_name;
 
-INSERT INTO list_collection
-VALUES(1, 'ANABIOS', '2026-03-06'), 
-(2, 'Romantic Collection', '2023-12-29'), 
-(3, 'King Kong', '2019-11-14'), 
-(4, 'Смесь', '2023-04-14');
+-- Количество треков, вошедших в альбомы 2019–2020 годов.
+SELECT COUNT(track_id) AS count_tracks
+FROM track t
+JOIN album_list a ON t.album_id = a.album_id
+WHERE a.year_release BETWEEN '2019-01-01' AND '2020-12-31';
 
-INSERT INTO collections_tracks
-VALUES(1, 3), (1, 4), (2, 5), (2, 4), (3, 6), (3, 7), (4, 3), (4, 4);
+-- Средняя продолжительность треков по каждому альбому.
+SELECT album_name, AVG(duration) AS avg_duration
+FROM album_list a
+JOIN track t ON a.album_id = t.album_id
+GROUP BY album_name;
+
+-- Все исполнители, которые не выпустили альбомы в 2020 году.
+SELECT DISTINCT p.name_performers
+FROM list_performers p
+LEFT JOIN albums_performers ap ON p.performers_id = ap.performers_id
+LEFT JOIN album_list a ON ap.album_id = a.album_id AND a.year_release BETWEEN '2020-01-01' AND '2020-12-31'
+WHERE a.album_id IS NULL;
+
+-- Названия сборников, в которых присутствует конкретный исполнитель (выберите его сами).
+SELECT DISTINCT lc.collection_name
+FROM list_collection lc
+JOIN collections_tracks ct ON lc.collection_id = ct.collection_id
+JOIN track t ON ct.track_id = t.track_id
+JOIN album_list a ON t.album_id = a.album_id
+JOIN albums_performers ap ON a.album_id = ap.album_id
+JOIN list_performers p ON ap.performers_id = p.performers_id
+WHERE p.name_performers = 'Скриптонит';
