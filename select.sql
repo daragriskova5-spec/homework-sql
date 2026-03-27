@@ -24,7 +24,20 @@ WHERE name_performers NOT LIKE '% %';
 -- Название треков, которые содержат слово «мой» или «my».
 SELECT track_name
 FROM track
-WHERE track_name LIKE '%мой%' OR track_name LIKE '%my%';
+WHERE track_name ILIKE 'my %'
+OR track_name ILIKE '% my'
+OR track_name ILIKE '% my %'
+OR track_name ILIKE 'my'
+OR track_name ILIKE 'мой %'
+OR track_name ILIKE '% мой'
+OR track_name ILIKE '% мой %'
+OR track_name ILIKE 'мой';
+
+SELECT track_name FROM track
+WHERE string_to_array(LOWER(track_name), ' ') && ARRAY['мой', 'my'];
+
+SELECT track_name FROM track
+WHERE track_name ~* '(^|[^[:alnum:]_])(мой|my)([^[:alnum:]_]|$)';
 
 -- Задание 3. Количество исполнителей в каждом жанре.
 SELECT genre_name, COUNT(performers_id) AS count_performers
@@ -45,11 +58,15 @@ JOIN track t ON a.album_id = t.album_id
 GROUP BY album_name;
 
 -- Все исполнители, которые не выпустили альбомы в 2020 году.
-SELECT DISTINCT p.name_performers
-FROM list_performers p
-LEFT JOIN albums_performers ap ON p.performers_id = ap.performers_id
-LEFT JOIN album_list a ON ap.album_id = a.album_id AND a.year_release BETWEEN '2020-01-01' AND '2020-12-31'
-WHERE a.album_id IS NULL;
+SELECT name_performers
+FROM list_performers
+WHERE name_performers NOT IN (
+    SELECT name_performers
+    FROM list_performers lp
+    JOIN albums_performers ap ON lp.performers_id = ap.performers_id
+    JOIN album_list a ON ap.album_id = a.album_id
+    WHERE EXTRACT(YEAR FROM a.year_release) = 2020
+);
 
 -- Названия сборников, в которых присутствует конкретный исполнитель (выберите его сами).
 SELECT DISTINCT lc.collection_name
